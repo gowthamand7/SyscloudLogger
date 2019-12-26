@@ -14,6 +14,7 @@ class SCLogger
     private $_handler;
     private $_formatType;
     
+    private static $_redis = null;
     private static $_fileStreamHandler = null;
     private static $_redisStreamHandler = null;
     /**
@@ -156,14 +157,18 @@ class SCLogger
      */
     private function getRedisStreamHandler()
     {
-        if(!self::$_redisStreamHandler)
+        if(!self::$_redis)
         {
             $host = $this->_redishost;
-            
             $redis = new \Redis();
             $redis->pconnect($host, 6379);
-            
-            self::$_redisStreamHandler =  new RedisHandler($redis, "logs", 'prod');
+            self::$_redis = $redis;
+            unset($redis);
+        }
+        
+        if(!self::$_redisStreamHandler)
+        {
+            self::$_redisStreamHandler =  new RedisHandler(self::$_redis, "logs", 'prod');
         }
         
         return self::$_redisStreamHandler;
