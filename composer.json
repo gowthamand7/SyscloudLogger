@@ -3,7 +3,7 @@
     "description": "Syscloud Error logger",
     "type": "library",
     "require": {
-        "monolog/monolog": "^2.0@beta"
+        "monolog/monolog": "^1.25"
     },
     "license": "proprietary",
     "authors": [
