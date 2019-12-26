@@ -5,7 +5,7 @@
     "require": {
         "monolog/monolog": "^2.0@beta"
     },
-    "license": "Syscloud",
+    "license": "proprietary",
     "authors": [
         {
             "name": "Manikandan Ganesan",
