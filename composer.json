@@ -15,5 +15,5 @@
     "autoload": {
         "psr-4": {"SyscloudLogger\\SCLogger\\": "src/"}
     },
-    "minimum-stability": "stable"
+    "minimum-stability": "dev"
 }
