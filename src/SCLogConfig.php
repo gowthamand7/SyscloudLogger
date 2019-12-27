@@ -11,7 +11,7 @@ class SCLogConfig
      * @param type $channel - Channel Name.
      * @param type $appName - Application Name.
      */   
-    public function __construct($channel, $appName)
+    public function __construct($channel, $appName, $configs)
     {
         $this->_stream = "";
         $this->_channel = $channel;
@@ -27,8 +27,18 @@ class SCLogConfig
                 break;
         }
        
-        $this->_filename = $this->getLogPath() . $appName . "-" . date("Y-m-d");
-        $this->_redishost = $this->getElasticCacheHost();
+        $logPath = $configs['logfilepath'];
+        $rediscacheHost = $configs['redisHost'];
+        
+        if(!$logPath){
+            $logPath = $this->getLogPath();
+        }
+        if(!$rediscacheHost){
+            $rediscacheHost = $this->getElasticCacheHost();
+        }
+        
+        $this->_filename = $logPath . $appName . ".log." . date("Y-m-d");
+        $this->_redishost = $rediscacheHost;
     }
     
     private function getLogPath()

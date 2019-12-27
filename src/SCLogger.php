@@ -17,14 +17,18 @@ class SCLogger
     private static $_redis = null;
     private static $_fileStreamHandler = null;
     private static $_redisStreamHandler = null;
+    
     /**
      * initialize logger
      * @param type $channel - Channel Name.
      * @param type $appName - Application Name.
+     * @param type $configs - This parameter accepts keys (logfilepath,redisHost)
+     * logfilepath (Example:- /home/ubuntu/SCSGBackup/SCSLog/)
+     * redisHost (Example:- elasticcachehost.XXXXXX.XX.XXXX.XXX.cache.amazonaws.com)
      */
-    public function __construct($channel, $appName)
+    public function __construct($channel, $appName, $configs = array())
     {
-        $this->_config =  new SCLogConfig($channel, $appName);
+        $this->_config =  new SCLogConfig($channel, $appName, $configs);
         $this->_redishost = $this->_config->_redishost;
         
         $logger = new Logger($this->_config->_channel);
