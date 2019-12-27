@@ -19,11 +19,11 @@ class SCLogConfig
         switch($channel)
         {
             case 'file_logger':
-                $ths->_stream = "file";
+                $this->_stream = "file";
                 break;
             
             case 'cache_logger':
-                 $ths->_stream = "redis";
+                 $this->_stream = "redis";
                 break;
         }
        
