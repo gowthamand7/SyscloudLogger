@@ -16,9 +16,9 @@ class SCLogConfig
         $this->_stream = "";
         $this->_channel = $channel;
         
-        $this->_businessUserId = $configs['businessuserId'];
-        $this->_userId = $configs['userid'];
-        $this->_cloudId = $configs['cloudid'];
+        $this->_businessUserId = $configs['metadata']['businessuserId'];
+        $this->_userId = $configs['metadata']['userid'];
+        $this->_cloudId = $configs['metadata']['cloudid'];
         
         if(!$this->_businessUserId ||
                 !$this->_userId ||
