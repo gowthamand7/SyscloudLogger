@@ -75,3 +75,14 @@ class SCLogConfig
     }
 }
 
+
+
+class ErrorIntensity
+{
+   const SYS_LOG_INFO = 1; //Info
+   const SYS_LOG_ERROR = 2; //Permenant Error
+   const SYS_LOG_WARNING = 3; //Temporary Error
+   const SYS_LOG_ALERT = 4; //Need Attention
+   const SYS_LOG_EMERGENCY = 5; //System Internal Error
+}
+
