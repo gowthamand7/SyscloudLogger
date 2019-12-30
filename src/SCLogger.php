@@ -53,23 +53,23 @@ class SCLogger
         
             switch($errorType)
             {
-                case LOG_INFO:
+                case SYS_LOG_INFO:
                     $this->_handler->addInfo($errorMessage);
                     break;
 
-                case LOG_ERROR:
+                case SYS_LOG_ERROR:
                     $this->_handler->addError($errorMessage);
                     break;
 
-                case LOG_WARNING:
+                case SYS_LOG_WARNING:
                     $this->_handler->addWarning($errorMessage);
                     break;
                 
-                case LOG_ALERT:
+                case SYS_LOG_ALERT:
                     $this->_handler->addAlert($errorMessage);
                     break;
                 
-                case LOG_EMERGENCY:
+                case SYS_LOG_EMERGENCY:
                     $this->_handler->addEmergency($errorMessage);
                     break;
             }
