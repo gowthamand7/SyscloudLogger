@@ -16,6 +16,17 @@ class SCLogConfig
         $this->_stream = "";
         $this->_channel = $channel;
         
+        $this->_businessUserId = $configs['businessuserId'];
+        $this->_userId = $configs['userid'];
+        $this->_cloudId = $configs['cloudid'];
+        
+        if(!$this->_businessUserId ||
+                !$this->_userId ||
+                !$this->_cloudId)
+        {
+            throw new Exception("Error log Configuration was wrong, Missing arguments...");
+        }
+        
         switch($channel)
         {
             case 'file_logger':

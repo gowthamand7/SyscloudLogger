@@ -8,7 +8,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Handler\RedisHandler;
 
 
-class SCLogger 
+class SCLogger
 {
     private $_config;
     private $_handler;
@@ -53,16 +53,24 @@ class SCLogger
         
             switch($errorType)
             {
-                case ERROR_INFO:
+                case LOG_INFO:
                     $this->_handler->addInfo($errorMessage);
                     break;
 
-                case ERROR_CRITICAL:
+                case LOG_ERROR:
                     $this->_handler->addError($errorMessage);
                     break;
 
-                case ERROR_WARNING:
+                case LOG_WARNING:
                     $this->_handler->addWarning($errorMessage);
+                    break;
+                
+                case LOG_ALERT:
+                    $this->_handler->addAlert($errorMessage);
+                    break;
+                
+                case LOG_EMERGENCY:
+                    $this->_handler->addEmergency($errorMessage);
                     break;
             }
             
@@ -70,7 +78,6 @@ class SCLogger
         catch (Exception $ex) 
         {
             error_log("Problem with monologger");
-            
         }
         
         return true;
@@ -170,9 +177,11 @@ class SCLogger
             unset($redis);
         }
         
+        $listName = $this->_config->_businessUserId . ":" . $this->_config->_userId . ":" . $this->_config->_cloudId;
+        
         if(!self::$_redisStreamHandler)
         {
-            self::$_redisStreamHandler =  new RedisHandler(self::$_redis, "logs", 'prod');
+            self::$_redisStreamHandler =  new RedisHandler(self::$_redis, $listName, 'prod');
         }
         
         return self::$_redisStreamHandler;
