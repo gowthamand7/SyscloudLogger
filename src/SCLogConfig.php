@@ -68,7 +68,8 @@ class SCLogConfig
     
     private function getElasticCacheHost()
     {
-        $elasticCacheHost = "backupelasticcache.h7tcur.ng.0001.use1.cache.amazonaws.com";
+        //Pass you own elastic cache address
+        $elasticCacheHost = "elasticcache.XXX.XX.XXXX.XXXX.cache.amazonaws.com";
         
         return $elasticCacheHost;
     }
