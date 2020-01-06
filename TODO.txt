@@ -1,0 +1,3 @@
+Move the file RedisHandler.php inside monologger handler library.
+It should be like
+YOUR_BASE_PATH\vendor\monolog\monolog\src\Monolog\Handler\RedisHandler.php
