@@ -19,10 +19,14 @@ class SCLogConfig
         $this->_businessUserId = $configs['metadata']['businessuserId'];
         $this->_userId = $configs['metadata']['userid'];
         $this->_cloudId = $configs['metadata']['cloudid'];
+        $this->_domainId = $configs['metadata']['domainid'];
+        $this->_module = $configs['metadata']['module'];
         
         if(!$this->_businessUserId ||
                 !$this->_userId ||
-                !$this->_cloudId)
+                !$this->_cloudId ||
+                !$this->_domainId ||
+                !$this->_module)
         {
             throw new Exception("Error log Configuration was wrong, Missing arguments...");
         }
@@ -35,6 +39,10 @@ class SCLogConfig
             
             case 'cache_logger':
                  $this->_stream = "redis";
+                break;
+            
+            case 'file_cache_logger':
+                $this->_stream = "file_redis";
                 break;
         }
        

@@ -11,7 +11,7 @@ use Monolog\Handler\RedisHandler;
 class SCLogger
 {
     private $_config;
-    private $_handler;
+    private $_handler = array();
     private $_formatType;
     
     private static $_redis = null;
@@ -32,7 +32,12 @@ class SCLogger
         $this->_redishost = $this->_config->_redishost;
         
         $logger = new Logger($this->_config->_channel);
-        $this->_handler = $logger->pushHandler($this->getStreamHandler());
+        $handlers = $this->getStreamHandler();
+        foreach($handlers as $handler)
+        {
+            $pushHandler = $logger->pushHandler($handler);
+        }
+        $this->_handler = $pushHandler;
     }
     
     public function __destruct() 
@@ -51,29 +56,30 @@ class SCLogger
             
             $errorMessage = $this->getFormattedError($errorCode, $message);
         
-            switch($errorType)
-            {
-                case ErrorIntensity::SYS_LOG_INFO:
-                    $this->_handler->addInfo($errorMessage);
-                    break;
+                $handler = $this->_handler;
+                switch($errorType)
+                {
+                    case ErrorIntensity::SYS_LOG_INFO:
+                        $handler->addInfo($errorMessage);
+                        break;
 
-                case ErrorIntensity::SYS_LOG_ERROR:
-                    $this->_handler->addError($errorMessage);
-                    break;
+                    case ErrorIntensity::SYS_LOG_ERROR:
+                        $handler->addError($errorMessage);
+                        break;
 
-                case ErrorIntensity::SYS_LOG_WARNING:
-                    $this->_handler->addWarning($errorMessage);
-                    break;
-                
-                case ErrorIntensity::SYS_LOG_ALERT:
-                    $this->_handler->addAlert($errorMessage);
-                    break;
-                
-                case ErrorIntensity::SYS_LOG_EMERGENCY:
-                    $this->_handler->addEmergency($errorMessage);
-                    break;
-            }
-            
+                    case ErrorIntensity::SYS_LOG_WARNING:
+                        $handler->addWarning($errorMessage);
+                        break;
+
+                    case ErrorIntensity::SYS_LOG_ALERT:
+                        $handler->addAlert($errorMessage);
+                        break;
+
+                    case ErrorIntensity::SYS_LOG_EMERGENCY:
+                        $handler->addEmergency($errorMessage);
+                        break;
+                }
+          
         } 
         catch (Exception $ex) 
         {
@@ -101,11 +107,12 @@ class SCLogger
             case "json":
                 $errorText = array(
                     "Code" => $errorCode,
-                    "Message" => $message
+                    "Message" => $message,
+                    "time" => time(),
+                    "userId" => $this->_config->_userId
                 );
                 $errorText = json_encode($errorText);
                 break;
-            
         }
         
         return $errorText;
@@ -121,17 +128,25 @@ class SCLogger
         switch($this->_config->_stream)
         {
              case "file":
-                 $stream = $this->getFileStreamHandler();
+                 $stream = array($this->getFileStreamHandler());
                  $this->_formatType = "text";
                  break;
              
              case "redis":
-                 $stream = $this->getRedisStreamHandler();
+                 $stream = array($this->getRedisStreamHandler());
                  $this->_formatType = "json";
                  break;
              
+             case "file_redis":
+                 $stream1 = $this->getRedisStreamHandler();
+                 $stream2 = $this->getFileStreamHandler();
+                 $this->_formatType = "json";
+                 $stream = array($stream1, $stream2);
+                 break;
+             
+             
              default: 
-                 $stream = $this->getFileStreamHandler();
+                 $stream = array($this->getFileStreamHandler());
                  $this->_formatType = "text";
                  break;
                  
@@ -177,14 +192,23 @@ class SCLogger
             unset($redis);
         }
         
-        $listName = $this->_config->_businessUserId . ":" . $this->_config->_userId . ":" . $this->_config->_cloudId;
+        $setName = $this->getSetName();
         
         if(!self::$_redisStreamHandler)
         {
-            self::$_redisStreamHandler =  new RedisHandler(self::$_redis, $listName, 'prod');
+            self::$_redisStreamHandler =  new RedisHandler(self::$_redis, $setName, 'prod');
         }
         
         return self::$_redisStreamHandler;
+    }
+    
+    /**
+     * function to get formatted setKey
+     * @return type
+     */
+    private function getSetName()
+    {
+        return $this->_config->_module . ":" . $this->_config->_businessUserId . ":" . $this->_config->_domainId . ":" . $this->_config->_cloudId . ":" . date("dmY");
     }
     
 }
