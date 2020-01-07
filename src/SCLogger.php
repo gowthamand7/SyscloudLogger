@@ -14,6 +14,7 @@ class SCLogger
     private $_handler = array();
     private $_formatType;
     private $_appName;
+    private $_debug = 0;
     
     private static $_redis = null;
     private static $_fileStreamHandler = null;
@@ -32,6 +33,7 @@ class SCLogger
         $this->_config =  new SCLogConfig($channel, $configs);
         $this->_redishost = $this->_config->_redishost;
         $this->_appName = $appName;
+        $this->_debug = $configs['debug'];
         
         $logger = new Logger($this->_config->_channel);
         $handlers = $this->getStreamHandler();
@@ -86,6 +88,13 @@ class SCLogger
 
                     case ErrorIntensity::SYS_LOG_EMERGENCY:
                         $handler->addEmergency($errorMessage);
+                        break;
+                    
+                    case ErrorIntensity::SYS_LOG_DEBUG:
+                        if($this->_debug)
+                        {
+                            $handler->addDebug($errorMessage);
+                        }
                         break;
                 }
           
