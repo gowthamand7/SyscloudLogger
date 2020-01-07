@@ -5,13 +5,13 @@ namespace SyscloudLogger\SCLogger;
 class SyscloudLogger
 {
     public static $_handler;
-    private $_config;
+    public static $_config;
     
-    public static function getInstance()
+    public function getInstance()
     {
         if(!self::$_handler)
         {
-            self::$_handler = new SCLogger($this->_config->channelName, $this->_config->appName, $this->_config->appConfig);
+            self::$_handler = new SCLogger(self::$_config->channelName, self::$_config->appName, self::$_config->appConfig);
         }
             
         return self::$_handler;    
@@ -19,7 +19,7 @@ class SyscloudLogger
     
     public function setConfig($config)
     {
-        $this->_config = $config;
+        self::$_config = $config;
     }
 }
 
