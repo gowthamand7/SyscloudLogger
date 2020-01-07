@@ -46,18 +46,25 @@ class SCLogger
     }
     
     /**
-     * function to post error log in respective stream
-     * @param type $message
+     * function to send logs in respective channels
+     * @param type $logLevel - Log level.
+     * @param type $errorCode - Error Code.
+     * @param type $message - Message.
+     * @return boolean
      */
-    public function error_log($message, $errorType, $errorCode = 0)
+    public function log($logLevel, $errorCode, $message)
     {
         try
         {
+            if($message instanceof  \Exception)
+            {
+                $message = $message->getMessage();
+            }
             
             $errorMessage = $this->getFormattedError($errorCode, $message);
         
                 $handler = $this->_handler;
-                switch($errorType)
+                switch($logLevel)
                 {
                     case ErrorIntensity::SYS_LOG_INFO:
                         $handler->addInfo($errorMessage);
