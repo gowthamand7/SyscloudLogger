@@ -11,7 +11,7 @@ class SCLogConfig
      * @param type $channel - Channel Name.
      * @param type $appName - Application Name.
      */   
-    public function __construct($channel, $appName, $configs)
+    public function __construct($channel, $configs)
     {
         $this->_stream = "";
         $this->_channel = $channel;
@@ -56,7 +56,7 @@ class SCLogConfig
             $rediscacheHost = $this->getElasticCacheHost();
         }
         
-        $this->_filename = $logPath . $appName . ".log." . date("Y-m-d");
+        $this->_filename = $logPath . $this->_module . ".log." . date("Y-m-d");
         $this->_redishost = $rediscacheHost;
     }
     
