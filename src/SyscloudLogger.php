@@ -7,7 +7,7 @@ class SyscloudLogger
     public static $_handler;
     public static $_config;
     
-    public function getInstance()
+    public static function getInstance()
     {
         if(!self::$_handler)
         {
@@ -17,7 +17,7 @@ class SyscloudLogger
         return self::$_handler;    
     }
     
-    public function setConfig($config)
+    public static function setConfig($config)
     {
         self::$_config = $config;
     }
