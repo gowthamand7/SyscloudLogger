@@ -61,32 +61,32 @@ class SCLogHandler
     
     public function debug($code, $message)
     {
-        $this->_handler->addDebug(ErrorIntensity::SYS_LOG_DEBUG, $code, $this->getCustomMessage($code, $message));
+        $this->_handler->addDebug($this->getCustomMessage($code, $message));
     }
 
     public function info($code, $message)
     {
-        $this->_handler->addInfo(ErrorIntensity::SYS_LOG_INFO, $code, $this->getCustomMessage($code, $message));
+        $this->_handler->addInfo($this->getCustomMessage($code, $message));
     }
 
     public function error($code, $message)
     {
-        $this->_handler->addError(ErrorIntensity::SYS_LOG_ERROR, $code, $this->getCustomMessage($code, $message));
+        $this->_handler->addError($this->getCustomMessage($code, $message));
     }
 
     public function warning($code, $message)
     {
-        $this->_handler->addWarning(ErrorIntensity::SYS_LOG_WARNING, $code, $this->getCustomMessage($code, $message));
+        $this->_handler->addWarning($this->getCustomMessage($code, $message));
     }
 
     public function alert($code, $message)
     {
-        $this->_handler->addAlert(ErrorIntensity::SYS_LOG_ALERT, $code, $this->getCustomMessage($code, $message));
+        $this->_handler->addAlert($this->getCustomMessage($code, $message));
     }
 
     public function emergency($code, $message)
     {
-        $this->_handler->addEmergency(ErrorIntensity::SYS_LOG_EMERGENCY, $code, $this->getCustomMessage($code, $message));
+        $this->_handler->addEmergency($this->getCustomMessage($code, $message));
     }
     
     /**
