@@ -2,6 +2,8 @@
 
 namespace SyscloudLogger\SCLogger;
 
+use SyscloudLogger\SCLogger\SqlHelper;
+use SyscloudLogger\SCLogger\DbException;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -12,6 +14,7 @@ class SCLogHandler
 {
     private $_config;
     private $_handler = array();
+    private $_syscloudHandler = array();
     private $_formatType;
     private $_appName;
     private $_debug = 0;
@@ -19,6 +22,7 @@ class SCLogHandler
     private static $_redis = null;
     private static $_fileStreamHandler = null;
     private static $_redisStreamHandler = null;
+    private static $_dbStreamHandler = null;
     
     /**
      * initialize logger
@@ -36,12 +40,16 @@ class SCLogHandler
         $this->_debug = $configs['debug'];
         
         $logger = new Logger($this->_config->_channel);
-        $handlers = $this->getStreamHandler();
+        $streams = $this->getStreamHandler();
+        $handlers = $streams['monolog'];
         foreach($handlers as $handler)
         {
             $pushHandler = $logger->pushHandler($handler);
         }
+
         $this->_handler = $pushHandler;
+        $this->_syscloudHandler = $streams['syscloud'][0];
+        
     }
     
     public function __destruct() 
@@ -62,91 +70,52 @@ class SCLogHandler
     public function debug($code, $message)
     {
         $this->_handler->addDebug($this->getCustomMessage($code, $message));
+        
+        if(isset($this->_syscloudHandler))
+            $this->_syscloudHandler->addDebug($this->getCustomMessage($code, $message));
     }
 
     public function info($code, $message)
     {
         $this->_handler->addInfo($this->getCustomMessage($code, $message));
+        
+        if(isset($this->_syscloudHandler))
+            $this->_syscloudHandler->addInfo($this->getCustomMessage($code, $message));
     }
 
     public function error($code, $message)
     {
         $this->_handler->addError($this->getCustomMessage($code, $message));
+        
+        if(isset($this->_syscloudHandler))
+            $this->_syscloudHandler->addError($this->getCustomMessage($code, $message));
     }
 
     public function warning($code, $message)
     {
         $this->_handler->addWarning($this->getCustomMessage($code, $message));
+        
+        if(isset($this->_syscloudHandler))
+            $this->_syscloudHandler->addWarning($this->getCustomMessage($code, $message));
     }
 
     public function alert($code, $message)
     {
         $this->_handler->addAlert($this->getCustomMessage($code, $message));
+        
+        if(isset($this->_syscloudHandler))
+            $this->_syscloudHandler->addAlert($this->getCustomMessage($code, $message));
     }
 
     public function emergency($code, $message)
     {
         $this->_handler->addEmergency($this->getCustomMessage($code, $message));
+        
+        if(isset($this->_syscloudHandler))
+            $this->_syscloudHandler->addEmergency($this->getCustomMessage($code, $message));
     }
     
-    /**
-     * function to send logs in respective channels
-     * @param type $logLevel - Log level.
-     * @param type $errorCode - Error Code.
-     * @param type $message - Message.
-     * @return boolean
-     */
-    public function log($logLevel, $errorCode, $message)
-    {
-        try
-        {
-            if($message instanceof  \Exception)
-            {
-                $message = $message->getMessage();
-            }
-            
-            $errorMessage = $this->getFormattedError($errorCode, $message);
-        
-                $handler = $this->_handler;
-                switch($logLevel)
-                {
-                    case ErrorIntensity::SYS_LOG_INFO:
-                        $handler->addInfo($errorMessage);
-                        break;
-
-                    case ErrorIntensity::SYS_LOG_ERROR:
-                        $handler->addError($errorMessage);
-                        break;
-
-                    case ErrorIntensity::SYS_LOG_WARNING:
-                        $handler->addWarning($errorMessage);
-                        break;
-
-                    case ErrorIntensity::SYS_LOG_ALERT:
-                        $handler->addAlert($errorMessage);
-                        break;
-
-                    case ErrorIntensity::SYS_LOG_EMERGENCY:
-                        $handler->addEmergency($errorMessage);
-                        break;
-                    
-                    case ErrorIntensity::SYS_LOG_DEBUG:
-                        if($this->_debug)
-                        {
-                            $handler->addDebug($errorMessage);
-                        }
-                        break;
-                }
-          
-        } 
-        catch (Exception $ex) 
-        {
-            error_log("Problem with monologger");
-        }
-        
-        return true;
-    }
-    
+   
     /**
      * function to format the error.
      * @param type $errorCode - Error code.
@@ -167,13 +136,16 @@ class SCLogHandler
                     "Code" => $errorCode,
                     "Message" => $message,
                     "time" => time(),
-                    "userId" => $this->_config->_userId
+                    "userId" => $this->_config->_userId,
+                    "businessUserId" => $this->_config->_businessUserId,
+                    "cloudId" => $this->_config->_cloudId,
+                    "domainId" => $this->_config->_domainId,
                 );
-                $errorText = json_encode($errorText);
+               // $errorText = json_encode($errorText);
                 break;
         }
         
-        return $errorText;
+        return json_encode($errorText);
     }
     
     /**
@@ -186,12 +158,16 @@ class SCLogHandler
         switch($this->_config->_stream)
         {
              case "file":
-                 $stream = array($this->getFileStreamHandler());
+                 $stream = array(
+                    "monolog" => array($this->getFileStreamHandler())
+                     );
                  $this->_formatType = "text";
                  break;
              
              case "redis":
-                 $stream = array($this->getRedisStreamHandler());
+                 $stream = array(
+                     "monolog" => array($this->getRedisStreamHandler())
+                     );
                  $this->_formatType = "json";
                  break;
              
@@ -199,12 +175,27 @@ class SCLogHandler
                  $stream1 = $this->getRedisStreamHandler();
                  $stream2 = $this->getFileStreamHandler();
                  $this->_formatType = "json";
-                 $stream = array($stream1, $stream2);
+                 $stream = array(
+                     "monolog" => array($stream1, $stream2)
+                     );
+                 break;
+             
+             case "file_redis_db":
+                 $stream1 = $this->getRedisStreamHandler();
+                 $stream2 = $this->getFileStreamHandler();
+                 $stream3 = $this->getDBStreamHandler();
+                 $this->_formatType = "json";
+                 $stream = array(
+                     "monolog" => array($stream1, $stream2), 
+                     "syscloud" => array($stream3)
+                         );
                  break;
              
              
              default: 
-                 $stream = array($this->getFileStreamHandler());
+                 $stream = array(
+                    "monolog" => array($this->getFileStreamHandler())
+                     );
                  $this->_formatType = "text";
                  break;
                  
@@ -258,6 +249,22 @@ class SCLogHandler
         }
         
         return self::$_redisStreamHandler;
+    }
+    
+    /**
+     * function to get sql stream handler.
+     * @return type
+     */
+    private function getDBStreamHandler()
+    {
+        if(!self::$_dbStreamHandler)
+        {
+            $connectionParamsJsonPath = __DIR__ . '/connection.json';
+            self::$_dbStreamHandler = new LogToDB($connectionParamsJsonPath);
+        }
+        
+        return self::$_dbStreamHandler;
+        
     }
     
     /**
