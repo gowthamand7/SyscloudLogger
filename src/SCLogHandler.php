@@ -2,8 +2,7 @@
 
 namespace SyscloudLogger\SCLogger;
 
-use SyscloudLogger\SCLogger\SqlHelper;
-use SyscloudLogger\SCLogger\DbException;
+use SyscloudLogger\SCLogger\LogToDB;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
