@@ -76,6 +76,7 @@ class SCLogHandler
     
     public function debug($code, $message)
     {
+        return;
         try {
             $this->_handler->addDebug($this->getCustomMessage($code, $message));
         
@@ -269,9 +270,11 @@ class SCLogHandler
     {
         if(!self::$_redis)
         {
-            $host = $this->_redishost;
-            $redis = new \Redis();
-            $redis->pconnect($host, 6379);
+            $hosts = explode(",",$this->_redishost);
+            $redis = new  \RedisCluster(NULL, $hosts);
+            
+            // $redis = new \Redis();
+            //$redis->pconnect($host, 6379);
             self::$_redis = $redis;
             unset($redis);
         }

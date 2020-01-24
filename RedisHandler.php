@@ -40,7 +40,7 @@ class RedisHandler extends AbstractProcessingHandler
      */
     public function __construct($redis, $key, $level = Logger::DEBUG, $bubble = true, $capSize = false)
     {
-        if (!(($redis instanceof \Predis\Client) || ($redis instanceof \Redis))) {
+        if (!(($redis instanceof \Predis\Client) || ($redis instanceof \Redis) || ($redis instanceof \RedisCluster))) {
             throw new \InvalidArgumentException('Predis\Client or Redis instance required');
         }
 
