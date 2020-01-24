@@ -61,9 +61,17 @@ class SCLogHandler
         if($message instanceof  \Exception)
         {
             $message = $message->getMessage();
+            $params = $message->getExtraParameters();
+            
+            $additionalInfo = null;
+            if(count($params) > 0)
+            {
+                $values = array_values($params);
+                $additionalInfo = implode(",", $values);
+            }
         }
 
-        return $this->getFormattedError($errorCode, $message);
+        return $this->getFormattedError($errorCode, $message, $additionalInfo);
     }
     
     public function debug($code, $message)
@@ -148,7 +156,7 @@ class SCLogHandler
      * @param type $message - Error Message.
      * @return type
      */
-    private function getFormattedError($errorCode, $message)
+    private function getFormattedError($errorCode, $message, $additionalInfo = "")
     {
         $errorText = "";
         switch($this->_formatType)
@@ -166,6 +174,7 @@ class SCLogHandler
                     "businessUserId" => $this->_config->_businessUserId,
                     "cloudId" => $this->_config->_cloudId,
                     "domainId" => $this->_config->_domainId,
+                    "additionalInfo" => $additionalInfo
                 );
                // $errorText = json_encode($errorText);
                 break;

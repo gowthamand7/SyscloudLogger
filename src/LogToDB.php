@@ -16,12 +16,25 @@ class LogToDB extends sqlHelper
     
     public function addInfo($message)
     {
-        $this->insert($message);
+        try
+        {
+            $this->insert($message);
+        } 
+        catch (Exception $ex) {
+            error_log("Error occurred while inserting log in DB" . $ex->getMessage());
+        }
+        
     }
     
     public function addError($message)
     {
-        $this->insert($message);
+        try
+        {
+            $this->insert($message);
+        } 
+        catch (Exception $ex) {
+            error_log("Error occurred while inserting log in DB" . $ex->getMessage());
+        }
     }
     
     public function addWarning($message)
@@ -30,18 +43,30 @@ class LogToDB extends sqlHelper
     }
     public function addAlert($message)
     {
-        $this->insert($message);
+        try
+        {
+            $this->insert($message);
+        } 
+        catch (Exception $ex) {
+            error_log("Error occurred while inserting log in DB" . $ex->getMessage());
+        }
     }
     
     public function addEmergency($message)
     {
-        $this->insert($message);
+        try
+        {
+            $this->insert($message);
+        } 
+        catch (Exception $ex) {
+            error_log("Error occurred while inserting log in DB" . $ex->getMessage());
+        }
     }
     
     private function insert($message)
     {
         $details = json_decode($message, true);
-        $query = "EXEC SCS_InsertUserEventDetails @sUserId=?,@sDomainId=?,@sErrorCode=?,@sCreatedAt=?,@sCloudId=?,@sEventStatus=?";
+        $query = "EXEC SCS_InsertUserEventDetails @sUserId=?,@sDomainId=?,@sErrorCode=?,@sCreatedAt=?,@sCloudId=?,@sEventStatus=?,@additionalDescription=?";
 
         $values = array(
             $details["userId"],
@@ -49,8 +74,8 @@ class LogToDB extends sqlHelper
             $details["Code"],
             date("Y-m-d H:i:s", $details["time"]),
             $details["cloudId"],
-            0
-
+            0,
+            $details["additionalInfo"]
         );
         $businessUserId = $details["businessUserId"];
         

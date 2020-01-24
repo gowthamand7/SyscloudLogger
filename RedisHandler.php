@@ -59,9 +59,15 @@ class RedisHandler extends AbstractProcessingHandler
         if ($this->capSize) {
             $this->writeCapped($record);
         } else {
-            $message = json_decode($record["message"], true);
-            $value = $message["userId"] . ':' . $message["Code"] . ':' . $message["time"];
-            $this->redisClient->sadd($this->redisKey, $value);
+            try{
+                $message = json_decode($record["message"], true);
+                $value = $message["userId"] . ':' . $message["Code"] . ':' . $message["time"];
+                $this->redisClient->sadd($this->redisKey, $value);
+                $this->redisClient->expire($this->redisKey, 86400 * 3);
+            } catch (Exception $ex) {
+
+            }
+            
             //$this->redisClient->rpush($this->redisKey, $record["formatted"]);
         }
     }
