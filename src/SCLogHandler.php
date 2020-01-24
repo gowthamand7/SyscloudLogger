@@ -60,8 +60,8 @@ class SCLogHandler
     {
         if($message instanceof  \Exception)
         {
-            $message = $message->getMessage();
             $params = $message->getExtraParameters();
+            $message = $message->getMessage();
             
             $additionalInfo = null;
             if(count($params) > 0)
