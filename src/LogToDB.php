@@ -39,7 +39,13 @@ class LogToDB extends sqlHelper
     
     public function addWarning($message)
     {
-        
+        try
+        {
+            $this->insert($message);
+        } 
+        catch (Exception $ex) {
+            error_log("Error occurred while inserting log in DB" . $ex->getMessage());
+        }
     }
     public function addAlert($message)
     {
