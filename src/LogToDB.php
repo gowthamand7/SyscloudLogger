@@ -72,8 +72,8 @@ class LogToDB extends sqlHelper
     private function insert($message)
     {
         $details = json_decode($message, true);
-        $query = "EXEC SCS_InsertUserEventDetails @sUserId=?,@sDomainId=?,@sErrorCode=?,@sCreatedAt=?,@sCloudId=?,@sEventStatus=?,@additionalDescription=?";
-
+        $query = "EXEC SCS_InsertUserEventDetails @sUserId=?,@sDomainId=?,@sErrorCode=?,@sCreatedAt=?,@sCloudId=?,@sEventStatus=?,@additionalDescription=?,@actionId=?,@actionItemId=?";
+   
         $values = array(
             $details["userId"],
             $details["domainId"],
@@ -81,7 +81,9 @@ class LogToDB extends sqlHelper
             date("Y-m-d H:i:s", $details["time"]),
             $details["cloudId"],
             0,
-            $details["additionalInfo"]
+            $details["additionalInfo"],
+            $details["actionId"],
+            $details["actionResultId"]
         );
         $businessUserId = $details["businessUserId"];
         
