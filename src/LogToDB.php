@@ -2,7 +2,7 @@
 
 namespace SyscloudLogger\SCLogger;
 
-class LogToDB extends sqlHelper
+class LogToDB extends SqlHelper
 {
     public function __construct($connectionParamsJsonPath, $connectionOptionsCacheJsonPath = null) 
     {
