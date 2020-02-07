@@ -289,7 +289,7 @@ class SCLogHandler
         
         if(!self::$_redisStreamHandler)
         {
-            self::$_redisStreamHandler =  new RedisHandler(self::$_redis, $setName, 'prod');
+            self::$_redisStreamHandler =  new RedisHandler(self::$_redis, $setName);
         }
         
         return self::$_redisStreamHandler;
