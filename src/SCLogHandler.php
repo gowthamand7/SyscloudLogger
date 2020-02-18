@@ -233,6 +233,16 @@ class SCLogHandler
                          );
                  break;
              
+             case "file_db":
+                 $stream1 = $this->getFileStreamHandler();
+                 $stream2 = $this->getDBStreamHandler();
+                 $this->_formatType = "json";
+                 $stream = array(
+                     "monolog" => array($stream1), 
+                     "syscloud" => array($stream2)
+                         );
+                 break;
+             
              
              default: 
                  $stream = array(
