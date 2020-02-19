@@ -63,7 +63,7 @@ class RedisHandler extends AbstractProcessingHandler
                 $message = json_decode($record["message"], true);
                 $value = $message["userId"] . ':' . $message["Code"] . ':' . $message["time"];
                 $this->redisClient->sadd($this->redisKey, $value);
-                $this->redisClient->expire($this->redisKey, 86400 * 3);
+                $this->redisClient->expire($this->redisKey, 86400);
             } catch (Exception $ex) {
 
             }
