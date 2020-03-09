@@ -83,7 +83,7 @@ class SCLogHandler
             if(isset($this->_syscloudHandler))
                 $this->_syscloudHandler->addDebug($this->getCustomMessage($code, $message, $metadata));
             
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             error_log("Error in monologger: " . $ex->getMessage());
         }
         
@@ -96,7 +96,7 @@ class SCLogHandler
         
         if(isset($this->_syscloudHandler))
             $this->_syscloudHandler->addInfo($this->getCustomMessage($code, $message, $metadata));
-         } catch (Exception $ex) {
+         } catch (\Exception $ex) {
             error_log("Error in monologger: " . $ex->getMessage());
         }
     }
@@ -108,7 +108,7 @@ class SCLogHandler
         
         if(isset($this->_syscloudHandler))
             $this->_syscloudHandler->addError($this->getCustomMessage($code, $message, $metadata));
-         } catch (Exception $ex) {
+         } catch (\Exception $ex) {
             error_log("Error in monologger: " . $ex->getMessage());
         }
     }
@@ -120,7 +120,7 @@ class SCLogHandler
         
         if(isset($this->_syscloudHandler))
             $this->_syscloudHandler->addWarning($this->getCustomMessage($code, $message, $metadata));
-         } catch (Exception $ex) {
+         } catch (\Exception $ex) {
             error_log("Error in monologger: " . $ex->getMessage());
         }
     }
@@ -132,7 +132,7 @@ class SCLogHandler
         
         if(isset($this->_syscloudHandler))
             $this->_syscloudHandler->addAlert($this->getCustomMessage($code, $message, $metadata));
-         } catch (Exception $ex) {
+         } catch (\Exception $ex) {
             error_log("Error in monologger: " . $ex->getMessage());
         }
     }
@@ -145,7 +145,7 @@ class SCLogHandler
         if(isset($this->_syscloudHandler))
             $this->_syscloudHandler->addEmergency($this->getCustomMessage($code, $message, $metadata));
         
-         } catch (Exception $ex) {
+         } catch (\Exception $ex) {
             error_log("Error in monologger: " . $ex->getMessage());
         }
     }
