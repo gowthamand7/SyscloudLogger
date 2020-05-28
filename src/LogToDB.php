@@ -60,6 +60,8 @@ class LogToDB extends SqlHelper
     
     public function addEmergency($message)
     {
+		return; 
+		//removed due to unwated load to db 
         try
         {
             $this->insert($message);
