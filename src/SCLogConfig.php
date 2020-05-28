@@ -28,7 +28,7 @@ class SCLogConfig
                 !$this->_domainId ||
                 !$this->_module)
         {
-            throw new Exception("Error log Configuration was wrong, Missing arguments...");
+            throw new \Exception("Error log Configuration was wrong, Missing arguments...");
         }
         
         switch($channel)
