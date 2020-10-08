@@ -203,7 +203,7 @@ class SCLogHandler
                  $stream = array(
                     "monolog" => array($this->getFileStreamHandler())
                      );
-                 $this->_formatType = "text";
+                 $this->_formatType = "json";
                  break;
              
              case "redis":
