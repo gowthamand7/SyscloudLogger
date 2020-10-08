@@ -180,8 +180,20 @@ class SCLogHandler
                 
                 if(count($metadata) > 0 && $metadata != null)
                 {
-                    $errorText["actionId"] = $metadata["actionId"];
-                    $errorText["actionResultId"] = $metadata["actionResultId"];
+                    if(isset($metadata["otherInfo"]))
+                    {
+                        $errorText["otherInfo"] = $metadata["otherInfo"];
+                    }
+                    
+                    if(isset($metadata["actionId"]))
+                    {
+                        $errorText["actionId"] = $metadata["actionId"];
+                    }
+                    
+                    if(isset($metadata["actionResultId"]))
+                    {
+                        $errorText["actionResultId"] = $metadata["actionResultId"];
+                    }
                 }
                // $errorText = json_encode($errorText);
                 break;
