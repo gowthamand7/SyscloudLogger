@@ -78,13 +78,14 @@ class SCLogHandler
     {
         return;
         try {
-            $this->_handler->addDebug($this->getCustomMessage($code, $message, $metadata));
+            $customMessage = $this->getCustomMessage($code, $message, $metadata);
+            $this->_handler->addDebug($customMessage);
         
             if(isset($this->_syscloudHandler))
-                $this->_syscloudHandler->addDebug($this->getCustomMessage($code, $message, $metadata));
+                $this->_syscloudHandler->addDebug($customMessage);
             
         } catch (\Exception $ex) {
-            error_log("Error in monologger: " . $ex->getMessage());
+            error_log("Error in monologger: " . $ex->getMessage() . " error: " . $customMessage);
         }
         
     }
@@ -92,61 +93,68 @@ class SCLogHandler
     public function info($code, $message, $metadata = array())
     {
          try {
-        $this->_handler->addInfo($this->getCustomMessage($code, $message, $metadata));
+             $customMessage = $this->getCustomMessage($code, $message, $metadata);
+        $this->_handler->addInfo($customMessage);
         
         if(isset($this->_syscloudHandler))
-            $this->_syscloudHandler->addInfo($this->getCustomMessage($code, $message, $metadata));
+            $this->_syscloudHandler->addInfo($customMessage);
          } catch (\Exception $ex) {
-            error_log("Error in monologger: " . $ex->getMessage());
+            error_log("Error in monologger: " . $ex->getMessage() . " error: " . $customMessage);
         }
     }
 
     public function error($code, $message, $metadata = array())
     {
         try{
-        $this->_handler->addError($this->getCustomMessage($code, $message, $metadata));
+            $customMessage = $this->getCustomMessage($code, $message, $metadata);
+        $this->_handler->addError($customMessage);
         
         if(isset($this->_syscloudHandler))
-            $this->_syscloudHandler->addError($this->getCustomMessage($code, $message, $metadata));
+            $this->_syscloudHandler->addError($customMessage);
          } catch (\Exception $ex) {
-            error_log("Error in monologger: " . $ex->getMessage());
+            error_log("Error in monologger: " . $ex->getMessage() . " error: " . $customMessage);
         }
     }
 
     public function warning($code, $message, $metadata = array())
     {
         try{
-        $this->_handler->addWarning($this->getCustomMessage($code, $message, $metadata));
+        $customMessage = $this->getCustomMessage($code, $message, $metadata);
+        $this->_handler->addWarning($customMessage);
         
         if(isset($this->_syscloudHandler))
-            $this->_syscloudHandler->addWarning($this->getCustomMessage($code, $message, $metadata));
+            $this->_syscloudHandler->addWarning($customMessage);
          } catch (\Exception $ex) {
-            error_log("Error in monologger: " . $ex->getMessage());
+            error_log("Error in monologger: " . $ex->getMessage() . " error: " . $customMessage);
         }
     }
 
     public function alert($code, $message, $metadata = array())
     {
         try{
-        $this->_handler->addAlert($this->getCustomMessage($code, $message, $metadata));
+            
+        $customMessage = $this->getCustomMessage($code, $message, $metadata);
+        $this->_handler->addAlert($customMessage);
         
         if(isset($this->_syscloudHandler))
-            $this->_syscloudHandler->addAlert($this->getCustomMessage($code, $message, $metadata));
+            $this->_syscloudHandler->addAlert($customMessage);
+        
          } catch (\Exception $ex) {
-            error_log("Error in monologger: " . $ex->getMessage());
+            error_log("Error in monologger: " . $ex->getMessage() . " error: " . $customMessage);
         }
     }
 
     public function emergency($code, $message, $metadata = array())
     {
         try{
-        $this->_handler->addEmergency($this->getCustomMessage($code, $message, $metadata));
+        $customMessage = $this->getCustomMessage($code, $message, $metadata);
+        $this->_handler->addEmergency($customMessage);
         
         if(isset($this->_syscloudHandler))
-            $this->_syscloudHandler->addEmergency($this->getCustomMessage($code, $message, $metadata));
+            $this->_syscloudHandler->addEmergency($customMessage);
         
          } catch (\Exception $ex) {
-            error_log("Error in monologger: " . $ex->getMessage());
+            error_log("Error in monologger: " . $ex->getMessage() . " error: " . $customMessage);
         }
     }
     
