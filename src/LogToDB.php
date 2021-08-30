@@ -74,26 +74,50 @@ class LogToDB extends SqlHelper
     private function insert($message)
     {
         $details = json_decode($message, true);
-        $query = "EXEC SCS_InsertUserEventDetails @sUserId=?,@sDomainId=?,@sErrorCode=?,@sCreatedAt=?,@sCloudId=?,@sEventStatus=?,@additionalDescription=?,@actionId=?,@actionItemId=?";
-   
-        $values = array(
-            $details["userId"],
-            $details["domainId"],
-            $details["Code"],
-            date("Y-m-d H:i:s", $details["time"]),
-            $details["cloudId"],
-            0,
-            $details["additionalInfo"],
-            $details["actionId"],
-            $details["actionResultId"]
-        );
         $businessUserId = $details["businessUserId"];
         
         if($businessUserId == null || $businessUserId == "")
             return;
         
+        $dbCredentials = $this->getDBCredentials($businessUserId);
+        $dbType = $dbCredentials['DBType'];
+        
+        $userId = $details["userId"];
+        $domainId = $details["domainId"];
+        $errorCode = $details["Code"];
+        $createdAt = date("Y-m-d H:i:s", $details["time"]);
+        $cloudId = $details["cloudId"];
+        $additionalInfo  = $details["additionalInfo"];
+        $actionId = isset($details["actionId"])?$details["actionId"]:0;
+        $actionResultId = isset($details["actionResultId"])?$details["actionResultId"]:0;
+        
+        // If it is PgSql Database
+        if($dbType == 2){
+            
+            $sqlQuery_write = "INSERT INTO dbo.usereventdetails_tbl(userid, domainid, errorcode, createdat, cloudid, eventstatus, additionaldescription, actionid, actionitemid)"
+                    . " VALUES($userId, $domainId, '$errorCode', '$createdAt', $cloudId, 0, '$additionalInfo', $actionId, $actionResultId) RETURNING eventid;";
+
+            $result = $this->executePgSqlQuery($businessUserId, $dbCredentials, $sqlQuery_write);
+            
+            return;
+        }
+        $query = "EXEC SCS_InsertUserEventDetails @sUserId=?,@sDomainId=?,@sErrorCode=?,@sCreatedAt=?,@sCloudId=?,@sEventStatus=?,@additionalDescription=?,@actionId=?,@actionItemId=?";
+   
+        $values = array(
+            $userId,
+            $domainId,
+            $errorCode,
+            $createdAt,
+            $cloudId,
+            0,
+            $additionalInfo,
+            $actionId,
+            $actionResultId
+        );
+        
+        
         $this->executeSqlQuery($businessUserId, $query, $values,
-        false, true);
+        false, true);                
     }
 
 }

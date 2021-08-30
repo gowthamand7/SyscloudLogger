@@ -19,6 +19,8 @@ class SqlHelper
     private $transDbs = [];
     // Path to JSON file where we cache connection options.
     private $connectionOptionsCacheJsonPath = null;
+    
+    private $postgreTrans = [];
 
 
     /**
@@ -41,6 +43,20 @@ class SqlHelper
     public function __destruct()
     {
         $this->close();
+        
+        if(is_array($this->postgreTrans)){
+            
+            foreach ($this->postgreTrans  as $transConnections){
+                $connections = array_values($transConnections);
+                
+                foreach ($connections as $connection){
+                    
+                    if(is_resource($connection)){
+                        pg_close($transConnection);
+                    }
+                }
+            }
+        }
     }    
     
     /**
@@ -394,7 +410,55 @@ class SqlHelper
         $errorMessage = $errorDetails['message'];
 
         return $errorMessage;
-    }   
+    }
+
+    /**
+     * function to get DBCredentials from SecretsManagerV2
+     * @param type $businessUserId - BusinessUserID
+     * @return type
+     */
+    public function getDBCredentials($businessUserId){
+        $data = (array) SecretsManager::getSecretKey($businessUserId, 'dbconnection/');
+        
+        return $data;
+    }
+    
+    /**
+     * function to get the PostGresDB Connection for a businessuserid.
+     * @param type $businessUserId - BusinessUserId
+     * @param type $data - Database credentials - Get it from SecertsManager DB Connections
+     * @param type $type - Read/Write Query
+     * @return type
+     */
+    public function getPostgreDbConnection($businessUserId, $data, $type='write') {
+        $connection = $this->postgreTrans[$businessUserId][$type];
+
+        if ($connection == null) {
+            //$data = (array) SecretsManager::getSecretKey(BUSINESS_USER_ID, 'dbconnection/');
+            $host= ($type =='read')? $data['DBServerIPAddressRead']:$data['DBServerIPAddress'];
+            $connectionString = "host=".$host.' port=5432 dbname='.$data['DBName'].' user='.$data['DBUserName'].' password='.$data['DBPassword'];
+
+            //$connectionString = "host=hasuratest-instance-1.c4c2pc3pzphc.us-east-1.rds.amazonaws.com port=5432 dbname=SCSGBackupTrans_13691 user=postgres password=Passw0rd#"; // remove this line after testing is completed
+            $connection = pg_connect($connectionString);
+            $this->postgreTrans[$businessUserId][$type] = $connection;
+        }
+        return $connection;
+    }
+    
+    /**
+     * Executing PgSql Query
+     * @param type $businessUserId - BusinessUserId
+     * @param type $dbCredentials - DB Credentials
+     * @param type $query - Query to execute.
+     * @return type
+     */
+    public function executePgSqlQuery($businessUserId, $dbCredentials, $query){
+        $pgsql_write = $this->getPostgreDbConnection($businessUserId, $dbCredentials, 'write');
+            $result = pg_query($pgsql_write, $query);
+            $rows = pg_fetch_all($result);
+            pg_free_result($result);
+            
+            return $rows;
+    }
+     
 }
-
-
