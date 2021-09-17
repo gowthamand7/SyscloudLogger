@@ -1,6 +1,6 @@
 <?php
 
-namespace UnifiedBackup\legacy;
+namespace SyscloudLogger\SCLogger;
 
 class sysCloudCache
 {
