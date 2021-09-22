@@ -59,6 +59,8 @@ class SCLogConfig
         
         if(!$logPath){
             $logPath = $this->getLogPath();
+        }else{
+            mkdir($logPath, 0777, true);
         }
         if(!$rediscacheHost){
             $rediscacheHost = $this->getElasticCacheHost();

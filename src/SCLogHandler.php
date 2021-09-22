@@ -47,8 +47,12 @@ class SCLogHandler
         }
 
         $this->_handler = $pushHandler;
-        $this->_syscloudHandler = $streams['syscloud'][0];
-        
+        if (array_key_exists("syscloud", $streams))
+        {
+            $this->_syscloudHandler = $streams['syscloud'][0];
+        }else{
+            $this->_syscloudHandler = NULL;
+        }
     }
     
     public function __destruct() 
@@ -58,6 +62,7 @@ class SCLogHandler
     
     private function getCustomMessage($errorCode, $message, $metadata)
     {
+        $additionalInfo = "";
         if($message instanceof  \Exception)
         {
             $params = $message->getExtraParameters();
