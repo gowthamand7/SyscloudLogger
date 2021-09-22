@@ -293,9 +293,9 @@ class SCLogHandler
 
             if(!file_exists($path))
             {
-                mkdir($path, DIRECTORY_PERMISSIONS, true);
+                mkdir($path, 0777, true);
             }
-            chmod($path, DIRECTORY_PERMISSIONS);
+            chmod($path, 0777);
 
             self::$_fileStreamHandler =  new StreamHandler($filename, Logger::DEBUG);
         }
