@@ -188,6 +188,7 @@ class SCLogHandler
                     "businessUserId" => $this->_config->_businessUserId,
                     "cloudId" => $this->_config->_cloudId,
                     "domainId" => $this->_config->_domainId,
+                    "accountid" => $this->_config->_accountid,
                     "additionalInfo" => $additionalInfo
                 );
                 
@@ -236,6 +237,17 @@ class SCLogHandler
                     "monolog" => array($this->getStdoutStreamHandler())
                      );
                  $this->_formatType = "json";
+                 break;
+             
+                          
+             case "stdout_db":
+                 $stream1 = $this->getStdoutStreamHandler();
+                 $stream2 = $this->getDBStreamHandler();
+                 $this->_formatType = "json";
+                 $stream = array(
+                     "monolog" => array($stream1), 
+                     "syscloud" => array($stream2)
+                         );
                  break;
              
              case "redis":

@@ -90,12 +90,13 @@ class LogToDB extends SqlHelper
         $additionalInfo  = $details["additionalInfo"];
         $actionId = isset($details["actionId"])?$details["actionId"]:0;
         $actionResultId = isset($details["actionResultId"])?$details["actionResultId"]:0;
+        $accountId = isset($details["accountid"])?$details["accountid"]:0;
         
         // If it is PgSql Database
         if($dbType == 2){
             
-            $sqlQuery_write = "INSERT INTO dbo.usereventdetails_tbl(userid, domainid, errorcode, createdat, cloudid, eventstatus, additionaldescription, actionid, actionitemid)"
-                    . " VALUES($userId, $domainId, '$errorCode', '$createdAt', $cloudId, 0, '$additionalInfo', $actionId, $actionResultId) RETURNING eventid;";
+            $sqlQuery_write = "INSERT INTO dbo.usereventdetails_tbl(userid, domainid, errorcode, createdat, cloudid, eventstatus, additionaldescription, actionid, actionitemid, accountid)"
+                    . " VALUES($userId, $domainId, '$errorCode', '$createdAt', $cloudId, 0, '$additionalInfo', $actionId, $actionResultId, $accountId) RETURNING eventid;";
 
             $result = $this->executePgSqlQuery($businessUserId, $dbCredentials, $sqlQuery_write);
             

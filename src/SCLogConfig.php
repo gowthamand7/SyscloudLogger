@@ -21,6 +21,7 @@ class SCLogConfig
         $this->_cloudId = $configs['metadata']['cloudid'];
         $this->_domainId = $configs['metadata']['domainid'];
         $this->_module = $configs['metadata']['module'];
+        $this->_accountid = $configs['metadata']['accountid'];
         
         if(!$this->_businessUserId ||
                 !$this->_userId ||
@@ -56,6 +57,10 @@ class SCLogConfig
             
             case 'stdout_logger':
                 $this->_stream = "stdout";
+                break;
+            
+            case 'stdout_db_logger':
+                $this->_stream = "stdout_db";
                 break;
         }
        
