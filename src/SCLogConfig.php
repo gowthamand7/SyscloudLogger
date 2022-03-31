@@ -52,6 +52,10 @@ class SCLogConfig
             case 'file_db_logger':
                 $this->_stream = "file_db";
                 break;
+            
+            case 'stdout_logger':
+                $this->_stream = "stdout";
+                break;
         }
        
         $logPath = $configs['logfilepath'];

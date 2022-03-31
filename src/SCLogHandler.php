@@ -231,6 +231,13 @@ class SCLogHandler
                  $this->_formatType = "json";
                  break;
              
+             case "stdout":
+                 $stream = array(
+                    "monolog" => array($this->getStdoutStreamHandler())
+                     );
+                 $this->_formatType = "json";
+                 break;
+             
              case "redis":
                  $stream = array(
                      "monolog" => array($this->getRedisStreamHandler())
@@ -302,6 +309,21 @@ class SCLogHandler
         
         return self::$_fileStreamHandler;
     }
+    
+     /**
+     * function to get standard output stream
+     * @return StreamHandler
+     */
+    private function getStdoutStreamHandler()
+    {
+        if(!self::$_fileStreamHandler)
+        {
+            self::$_fileStreamHandler =  new StreamHandler("php://stdout", Logger::DEBUG);
+        }
+        
+        return self::$_fileStreamHandler;
+    }
+    
     
     /**
      * function to get Redis cache stream
