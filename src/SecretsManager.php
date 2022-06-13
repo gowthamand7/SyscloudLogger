@@ -82,11 +82,15 @@ class SecretsManager
     
     private static function getAPIResponse($url) {
         for ($i = 0; $i < self::$maxRetry; $i++) {
+            $headers = [
+                'X-Requestor-Id: Monologger',   
+                ];
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
-            curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);     
+            curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);   
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
             $response = curl_exec($ch);
             $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $error = curl_error($ch);
