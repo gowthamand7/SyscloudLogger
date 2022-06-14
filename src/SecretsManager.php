@@ -14,7 +14,8 @@ class SecretsManager
 
     private static function init() {
         $config = json_decode(file_get_contents(__DIR__ .'/config.json'));
-        self::$hostName = $config->secretsManager->hostName;
+        //self::$hostName = $config->secretsManager->hostName;
+        self::$hostName = SECRETS_MANAGER_HOSTNAME;
         self::$basePath = $config->secretsManager->basePath;
         self::$maxRetry = $config->secretsManager->retry;
         self::$ttl = $config->secretsManager->cachettl;
