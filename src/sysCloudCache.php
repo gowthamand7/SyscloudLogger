@@ -76,7 +76,7 @@ class ApcuSysCloudCacheAdapter implements cacheAdapter
 {
     public function isEnabled()
     {
-        return apcu_enabled();
+        return false;
     }
 
     public function get($key)
@@ -104,10 +104,11 @@ class winCacheSysCloudCacheAdapter implements cacheAdapter
 {
     public function isEnabled()
     {
-        return function_exists('wincache_ucache_info') && !strcmp(
-            ini_get('wincache.ucenabled'),
-            "1"
-        );
+        return false;
+//        return function_exists('wincache_ucache_info') && !strcmp(
+//            ini_get('wincache.ucenabled'),
+//            "1"
+//        );
     }
 
     public function get($key)

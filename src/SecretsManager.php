@@ -2,6 +2,8 @@
 
 namespace SyscloudLogger\SCLogger;
 
+require_once __DIR__.'/sysCloudCache.php';
+
 /**
  * Class to access secret manager to get the module keys 
  */
@@ -28,8 +30,13 @@ class SecretsManager
         if (self::$hostName == null || self::$maxRetry == null || self::$basePath == null) {
             self::init();
         }
-        if (sysCloudCache::hasKey($key)) {
-            $value = sysCloudCache::get($key);
+        $cacheKey = str_replace('/', '_', $key);
+        if($basePath == 'dbconnection/' && sysCloudCache::hasKey($cacheKey) == false)
+        {
+            self::doAPICallForDBConnections();
+        }
+        if (sysCloudCache::hasKey($cacheKey)) {
+            $value = sysCloudCache::get($cacheKey);
             if ($value === false) {
             $value = self::doAPICall($key, $basePath);
             }
@@ -38,20 +45,38 @@ class SecretsManager
         }
         return $value;
     }
-    
-    
-    private static function doAPICall($key, $basePath = false) {
-        $url = self::$hostName.($basePath ?: self::$basePath).$key;
+    private static function doAPICallForDBConnections()
+    {
+        if (sysCloudCache::hasKey('dbconnections')) {
+            $value = sysCloudCache::get('dbconnections');
+            if ($value != false) {
+                return;
+            }
+        }
+        $url = self::$hostName . 'dbconnections';
+        $response = self::getAPIResponse($url);
+        $dbConnections = json_decode($response);
+        sysCloudCache::set('dbconnections', $dbConnections, self::$ttl);
+        foreach ($dbConnections as $key => $dbConnection)
+        {
+            sysCloudCache::set($key, $dbConnection, self::$ttl);
+        }
+        return ;
+    }
+    private static function doAPICall($key, $basePath = false)
+    {
+        $cacheKey = str_replace('/', '_', $key);
+        $url = self::$hostName . ($basePath ?: self::$basePath) . $key;
         $response = self::getAPIResponse($url);
         if ($response !== false && $response != 'Failed to get Key ') {
-            if($key == 'google' && $basePath == 'auth/') {
-                sysCloudCache::set($key, $response, self::$ttl);
+            if ($key == 'google' && $basePath == 'auth/') {
+                sysCloudCache::set($cacheKey, $response, self::$ttl);
                 return $response;
             }
             $responseParsed = json_decode($response);
             //temp fix 
             $value =  isset($responseParsed->keyvalue) ? $responseParsed->keyvalue : $responseParsed;
-            sysCloudCache::set($key, $value, self::$ttl);
+            sysCloudCache::set($cacheKey, $value, self::$ttl);
             return $value;
         } else {
             throw new \Exception('Failed to get the secret key :: key name = '.$key);
@@ -95,6 +120,10 @@ class SecretsManager
             $response = curl_exec($ch);
             $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $error = curl_error($ch);
+            if(str_contains($response, 'Data is not found for this business'))
+            {
+                break;
+            }
             if ($error != '' || $response == 'Failed to get Key ' || $response === false || $responseCode != 200) {
                 // log error message                
                 usleep((1 << $i) * 1000000 + rand(0, 1000000));
