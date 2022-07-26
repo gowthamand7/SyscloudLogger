@@ -454,6 +454,11 @@ class SqlHelper
      */
     public function executePgSqlQuery($businessUserId, $dbCredentials, $query){
         $pgsql_write = $this->getPostgreDbConnection($businessUserId, $dbCredentials, 'write');
+        
+           if(!is_resource($pgsql_write))
+           {
+               return array();
+           }
             $result = pg_query($pgsql_write, $query);
             $rows = pg_fetch_all($result);
             pg_free_result($result);
